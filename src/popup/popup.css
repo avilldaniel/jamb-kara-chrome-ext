@@ -1,0 +1,169 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 280px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-size: 13px;
+}
+
+#app {
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.status.connected {
+  background: #1b4332;
+  color: #95d5b2;
+}
+
+.status.disconnected {
+  background: #3d1f1f;
+  color: #e57373;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.controls.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #9e9e9e;
+  margin-bottom: 8px;
+}
+
+.pitch-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  border: 1px solid #333;
+  background: #2a2a40;
+  color: #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn:hover {
+  background: #3a3a55;
+}
+
+.btn:active {
+  background: #4a4a65;
+}
+
+.btn-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #7c4dff;
+  cursor: pointer;
+  border: 2px solid #1a1a2e;
+}
+
+.value {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: #9e9e9e;
+  margin-top: 4px;
+}
+
+.speed-row {
+  display: flex;
+  gap: 4px;
+}
+
+.speed-btn {
+  flex: 1;
+  padding: 6px 0;
+  font-size: 11px;
+  text-align: center;
+  border: 1px solid #333;
+  background: #2a2a40;
+  color: #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.speed-btn:hover {
+  background: #3a3a55;
+}
+
+.speed-btn.active {
+  background: #7c4dff;
+  border-color: #7c4dff;
+  color: #fff;
+  font-weight: 600;
+}
+
+.video-info {
+  font-size: 11px;
+  color: #666;
+  text-align: center;
+  padding-top: 8px;
+  border-top: 1px solid #2a2a40;
+  word-break: break-all;
+}

@@ -1,8 +1,8 @@
 import type { ExtensionState } from './types';
 
 export const DEFAULT_STATE: ExtensionState = {
-  isCapturing: false,
-  capturingTabId: null,
+  isActive: false,
+  activeTabId: null,
   currentVideoId: null,
   pitchSemitones: 0,
   speed: 1,

@@ -9,34 +9,19 @@ h1 {
   margin: 0 0 12px;
 }
 
-.capture-btn {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
+.status {
+  padding: 6px 12px;
+  font-size: 13px;
   font-weight: 600;
-  border: none;
   border-radius: 6px;
-  cursor: pointer;
+  text-align: center;
   background: #333;
-  color: #fff;
-  transition: background 0.15s;
+  color: #999;
 }
 
-.capture-btn:hover:not(:disabled) {
-  background: #444;
-}
-
-.capture-btn.active {
-  background: #4CAF50;
-}
-
-.capture-btn.active:hover:not(:disabled) {
-  background: #45a049;
-}
-
-.capture-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.status.active {
+  background: #1b3a1d;
+  color: #4CAF50;
 }
 
 .control {
@@ -79,10 +64,6 @@ h1 {
 .step-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
-}
-
-.control input[type="range"]:disabled {
-  opacity: 0.4;
 }
 
 .saved-indicator {

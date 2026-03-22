@@ -10,7 +10,6 @@ function sendMessage(message: any): Promise<any> {
 function App() {
   const [state, setState] = useState<ExtensionState | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     sendMessage({ action: 'GET_STATE' }).then((resp) => {
@@ -18,23 +17,10 @@ function App() {
     });
   }, []);
 
-  async function toggleCapture() {
-    setLoading(true);
-    setError(null);
-    try {
-      const action = state?.isCapturing ? 'STOP_CAPTURE' : 'START_CAPTURE';
-      const resp = await sendMessage({ action });
-      if (resp?.type === 'STATE') setState(resp.state);
-      if (resp?.type === 'ERROR') setError(resp.message);
-    } catch (err: any) {
-      setError(err.message);
-    }
-    setLoading(false);
-  }
-
   async function handlePitch(semitones: number) {
     setState((s) => (s ? { ...s, pitchSemitones: semitones } : s));
     const resp = await sendMessage({ action: 'SET_PITCH', semitones });
+    if (resp?.type === 'STATE') setState(resp.state);
     if (resp?.type === 'ERROR') setError(resp.message);
   }
 
@@ -44,13 +30,9 @@ function App() {
     <div className="popup">
       <h1>Pitch Shift</h1>
 
-      <button
-        className={`capture-btn ${state.isCapturing ? 'active' : ''}`}
-        onClick={toggleCapture}
-        disabled={loading}
-      >
-        {loading ? '...' : state.isCapturing ? 'Stop Capture' : 'Start Capture'}
-      </button>
+      <div className={`status ${state.isActive ? 'active' : ''}`}>
+        {state.isActive ? 'Active' : 'Waiting for YouTube'}
+      </div>
 
       <div className="control">
         <label>
@@ -63,7 +45,7 @@ function App() {
           <button
             className="step-btn"
             onClick={() => handlePitch(Math.max(SEMITONES_MIN, state.pitchSemitones - 1))}
-            disabled={!state.isCapturing || state.pitchSemitones <= SEMITONES_MIN}
+            disabled={state.pitchSemitones <= SEMITONES_MIN}
           >-</button>
           <input
             type="range"
@@ -72,12 +54,11 @@ function App() {
             step={1}
             value={state.pitchSemitones}
             onChange={(e) => handlePitch(Number(e.target.value))}
-            disabled={!state.isCapturing}
           />
           <button
             className="step-btn"
             onClick={() => handlePitch(Math.min(SEMITONES_MAX, state.pitchSemitones + 1))}
-            disabled={!state.isCapturing || state.pitchSemitones >= SEMITONES_MAX}
+            disabled={state.pitchSemitones >= SEMITONES_MAX}
           >+</button>
         </div>
       </div>

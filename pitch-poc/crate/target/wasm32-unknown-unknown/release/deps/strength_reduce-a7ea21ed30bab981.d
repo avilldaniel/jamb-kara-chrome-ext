@@ -1,0 +1,9 @@
+/Users/Streaming/Desktop/code/jamb-kara-chrome-ext/.claude/worktrees/tmp-wasm-iso/pitch-poc/crate/target/wasm32-unknown-unknown/release/deps/strength_reduce-a7ea21ed30bab981.d: /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/lib.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/long_division.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/long_multiplication.rs
+
+/Users/Streaming/Desktop/code/jamb-kara-chrome-ext/.claude/worktrees/tmp-wasm-iso/pitch-poc/crate/target/wasm32-unknown-unknown/release/deps/libstrength_reduce-a7ea21ed30bab981.rlib: /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/lib.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/long_division.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/long_multiplication.rs
+
+/Users/Streaming/Desktop/code/jamb-kara-chrome-ext/.claude/worktrees/tmp-wasm-iso/pitch-poc/crate/target/wasm32-unknown-unknown/release/deps/libstrength_reduce-a7ea21ed30bab981.rmeta: /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/lib.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/long_division.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/long_multiplication.rs
+
+/Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/lib.rs:
+/Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/long_division.rs:
+/Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/strength_reduce-0.2.4/src/long_multiplication.rs:

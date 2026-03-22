@@ -1,0 +1,9 @@
+/Users/Streaming/Desktop/code/jamb-kara-chrome-ext/.claude/worktrees/tmp-wasm-iso/pitch-poc/crate/target/wasm32-unknown-unknown/release/deps/primal_check-700d04f16e2f3300.d: /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/lib.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/perfect_power.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/is_prime.rs
+
+/Users/Streaming/Desktop/code/jamb-kara-chrome-ext/.claude/worktrees/tmp-wasm-iso/pitch-poc/crate/target/wasm32-unknown-unknown/release/deps/libprimal_check-700d04f16e2f3300.rlib: /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/lib.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/perfect_power.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/is_prime.rs
+
+/Users/Streaming/Desktop/code/jamb-kara-chrome-ext/.claude/worktrees/tmp-wasm-iso/pitch-poc/crate/target/wasm32-unknown-unknown/release/deps/libprimal_check-700d04f16e2f3300.rmeta: /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/lib.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/perfect_power.rs /Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/is_prime.rs
+
+/Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/lib.rs:
+/Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/perfect_power.rs:
+/Users/Streaming/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/primal-check-0.3.4/src/is_prime.rs:

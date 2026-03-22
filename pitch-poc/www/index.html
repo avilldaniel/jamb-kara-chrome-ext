@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pitch POC</title>
+</head>
+<body>
+  <input type="file" id="audio-file" accept="audio/*" />
+  <button id="play-btn" disabled>Play through WASM</button>
+  <p id="status">Select an audio file</p>
+
+  <div id="pitch-control" style="display:none">
+    <label>Pitch: <span id="pitch-label">0</span> semitones</label>
+    <input type="range" id="pitch-slider" min="-12" max="12" value="0" step="1" />
+  </div>
+
+  <pre id="perf" style="display:none; background:#222; color:#0f0; padding:8px; font-size:13px"></pre>
+
+  <audio id="player" controls style="display:none"></audio>
+
+  <script>
+    const fileInput = document.getElementById("audio-file");
+    const playBtn = document.getElementById("play-btn");
+    const status = document.getElementById("status");
+    const player = document.getElementById("player");
+
+    const pitchControl = document.getElementById("pitch-control");
+    const pitchSlider = document.getElementById("pitch-slider");
+    const pitchLabel = document.getElementById("pitch-label");
+
+    let audioCtx = null;
+    let workletNode = null;
+    let sourceNode = null;
+    let wasmLoaded = false;
+    let lowShelf = null;
+    let midPeak = null;
+    let highShelf = null;
+
+    pitchSlider.addEventListener("input", () => {
+      const semitones = Number(pitchSlider.value);
+      pitchLabel.textContent = semitones;
+      if (workletNode) {
+        const factor = Math.pow(2, semitones / 12);
+        workletNode.port.postMessage({ type: "set-pitch", value: factor });
+      }
+    });
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      player.src = url;
+      player.style.display = "block";
+      status.textContent = `Loaded: ${file.name}`;
+      playBtn.disabled = false;
+    });
+
+    playBtn.addEventListener("click", async () => {
+      playBtn.disabled = true;
+
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+
+        status.textContent = "Loading worklet...";
+        await audioCtx.audioWorklet.addModule("pitch-processor.js");
+
+        workletNode = new AudioWorkletNode(audioCtx, "pitch-processor", {
+          outputChannelCount: [2],
+        });
+
+        status.textContent = "Loading WASM...";
+        const wasmResp = await fetch("wasm/pitch_poc_bg.wasm");
+        const wasmBytes = await wasmResp.arrayBuffer();
+
+        const perfEl = document.getElementById("perf");
+
+        function onPerfMessage(e) {
+          if (e.data.type === "perf") {
+            perfEl.style.display = "block";
+            const pct = ((e.data.avgMs / e.data.budgetMs) * 100).toFixed(1);
+            perfEl.textContent =
+              `block budget: ${e.data.budgetMs}ms\n` +
+              `avg: ${e.data.avgMs}ms (${pct}%)\n` +
+              `max: ${e.data.maxMs}ms\n` +
+              `blocks: ${e.data.blocks}`;
+          }
+        }
+
+        const wasmReady2 = new Promise((resolve, reject) => {
+          workletNode.port.onmessage = (e) => {
+            if (e.data.type === "wasm-ready") {
+              workletNode.port.onmessage = onPerfMessage;
+              resolve();
+            } else if (e.data.type === "wasm-error") {
+              reject(new Error(e.data.error));
+            }
+          };
+        }).catch((err) => {
+          status.textContent = "WASM error: " + err.message;
+          console.error("Worklet WASM init failed:", err);
+          throw err;
+        });
+
+        workletNode.port.postMessage({ type: "init-wasm", wasmBytes }, [wasmBytes]);
+        await wasmReady2;
+
+        lowShelf = audioCtx.createBiquadFilter();
+        lowShelf.type = "lowshelf";
+        lowShelf.frequency.value = 200;
+        lowShelf.gain.value = 2;
+
+        midPeak = audioCtx.createBiquadFilter();
+        midPeak.type = "peaking";
+        midPeak.frequency.value = 1000;
+        midPeak.Q.value = 1.0;
+        midPeak.gain.value = 3;
+
+        highShelf = audioCtx.createBiquadFilter();
+        highShelf.type = "highshelf";
+        highShelf.frequency.value = 4000;
+        highShelf.gain.value = 3;
+
+        sourceNode = audioCtx.createMediaElementSource(player);
+        sourceNode.connect(workletNode)
+          .connect(lowShelf)
+          .connect(midPeak)
+          .connect(highShelf)
+          .connect(audioCtx.destination);
+        wasmLoaded = true;
+        pitchControl.style.display = "block";
+      }
+
+      await audioCtx.resume();
+      player.play();
+      status.textContent = "Playing (WASM pitch shift)...";
+      playBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>

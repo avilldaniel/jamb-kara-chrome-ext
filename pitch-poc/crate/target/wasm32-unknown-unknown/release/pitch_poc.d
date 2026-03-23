@@ -1,1 +1,0 @@
-/Users/Streaming/Desktop/code/jamb-kara-chrome-ext/.claude/worktrees/tmp-wasm-iso/pitch-poc/crate/target/wasm32-unknown-unknown/release/pitch_poc.wasm: /Users/Streaming/Desktop/code/jamb-kara-chrome-ext/.claude/worktrees/tmp-wasm-iso/pitch-poc/crate/src/lib.rs

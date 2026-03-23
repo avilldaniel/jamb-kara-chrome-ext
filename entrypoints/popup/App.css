@@ -1,42 +1,79 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+.popup {
+  width: 280px;
+  padding: 16px;
+  font-family: system-ui, sans-serif;
+}
+
+h1 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+
+.status {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
   text-align: center;
+  background: #333;
+  color: #999;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #54bc4ae0);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.status.active {
+  background: #1b3a1d;
+  color: #4CAF50;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.control {
+  margin-top: 16px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.control label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
-.card {
-  padding: 2em;
+.pitch-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.read-the-docs {
-  color: #888;
+.pitch-row input[type="range"] {
+  flex: 1;
+}
+
+.step-btn {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  font-weight: 700;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.step-btn:hover:not(:disabled) {
+  background: #444;
+}
+
+.step-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.saved-indicator {
+  font-size: 11px;
+  color: #4CAF50;
+  margin-left: 4px;
+}
+
+.error {
+  color: #e53935;
+  font-size: 12px;
+  margin-top: 8px;
 }

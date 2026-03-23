@@ -9,41 +9,30 @@
  *
  * IMPORTANT: This script runs in the PAGE's main world, not the extension's
  * isolated world. It has no access to chrome.* APIs.
+ *
+ * KEY DESIGN DECISION: YouTube reuses the same <video> element across SPA
+ * navigations. We hook the video element ONCE and keep the pipeline alive.
+ * The content script handles navigation by updating pitch via kara:set-pitch.
+ * We do NOT teardown/re-hook on yt-navigate-finish — that causes race conditions.
  */
 (function () {
   'use strict';
 
-  let audioCtx = null;
-  let workletNode = null;
-  let sourceNode = null;
-  let lowShelf = null;
-  let midPeak = null;
-  let highShelf = null;
-  let initialized = false;
-  let hookPending = false;
-
-  let workletUrl = null;
-  let wasmUrl = null;
+  var audioCtx = null;
+  var workletNode = null;
+  var sourceNode = null;
+  var lowShelf = null;
+  var midPeak = null;
+  var highShelf = null;
+  var initialized = false;
+  var hookPending = false;
 
   // -------------------------------------------------------------------------
   // Initialization — receive URLs from content script
   // -------------------------------------------------------------------------
 
   window.addEventListener('kara:init', function (e) {
-    workletUrl = e.detail.workletUrl;
-    wasmUrl = e.detail.wasmUrl;
-    hookVideo();
-  });
-
-  // -------------------------------------------------------------------------
-  // SPA navigation — re-hook on new video
-  // -------------------------------------------------------------------------
-
-  document.addEventListener('yt-navigate-finish', function () {
-    // Only teardown + re-hook if we have URLs (init was called)
-    if (!workletUrl) return;
-    teardown();
-    hookVideo();
+    hookVideo(e.detail.workletUrl, e.detail.wasmUrl);
   });
 
   // -------------------------------------------------------------------------
@@ -57,10 +46,10 @@
   });
 
   // -------------------------------------------------------------------------
-  // Core: hook the video element's audio
+  // Core: hook the video element's audio (called ONCE per page lifecycle)
   // -------------------------------------------------------------------------
 
-  async function hookVideo() {
+  async function hookVideo(workletUrl, wasmUrl) {
     if (initialized || hookPending) return;
     hookPending = true;
 
@@ -72,14 +61,25 @@
         return;
       }
 
-      // Create AudioContext (may need user gesture to resume)
+      // 1. Create AudioContext and ensure it's running
       audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') {
+        // Try to resume immediately; if blocked by autoplay policy,
+        // we'll resume on first user interaction
+        audioCtx.resume().catch(function () {});
+        document.addEventListener('click', function resumeOnClick() {
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+          document.removeEventListener('click', resumeOnClick);
+        }, { once: true });
+      }
 
-      // Load worklet module
+      // 2. Load worklet module
       await audioCtx.audioWorklet.addModule(workletUrl);
       workletNode = new AudioWorkletNode(audioCtx, 'pitch-processor');
 
-      // Fetch and init WASM in the worklet
+      // 3. Fetch and init WASM in the worklet
       var resp = await fetch(wasmUrl);
       var wasmBytes = await resp.arrayBuffer();
       await new Promise(function (resolve, reject) {
@@ -96,7 +96,7 @@
         workletNode.port.postMessage({ type: 'init-wasm', wasmBytes: wasmBytes }, [wasmBytes]);
       });
 
-      // EQ coloration compensation (matches offscreen/main.ts values)
+      // 4. Set up EQ coloration compensation
       lowShelf = audioCtx.createBiquadFilter();
       lowShelf.type = 'lowshelf';
       lowShelf.frequency.value = 200;
@@ -113,13 +113,17 @@
       highShelf.frequency.value = 4000;
       highShelf.gain.value = 3;
 
-      // Connect: video → worklet → EQ → speakers
-      sourceNode = audioCtx.createMediaElementSource(video);
-      sourceNode.connect(workletNode);
+      // 5. Wire up the downstream chain FIRST (worklet → EQ → speakers)
       workletNode.connect(lowShelf);
       lowShelf.connect(midPeak);
       midPeak.connect(highShelf);
       highShelf.connect(audioCtx.destination);
+
+      // 6. Connect video source LAST — this is the moment audio gets redirected
+      //    through our pipeline. By connecting last, we ensure the full chain
+      //    is ready so there's no silence gap.
+      sourceNode = audioCtx.createMediaElementSource(video);
+      sourceNode.connect(workletNode);
 
       initialized = true;
       hookPending = false;
@@ -129,30 +133,6 @@
       hookPending = false;
       dispatchError(err.message || 'Unknown audio error');
     }
-  }
-
-  // -------------------------------------------------------------------------
-  // Teardown — disconnect all nodes, close context
-  // -------------------------------------------------------------------------
-
-  function teardown() {
-    try {
-      if (sourceNode) sourceNode.disconnect();
-      if (workletNode) workletNode.disconnect();
-      if (lowShelf) lowShelf.disconnect();
-      if (midPeak) midPeak.disconnect();
-      if (highShelf) highShelf.disconnect();
-      if (audioCtx && audioCtx.state !== 'closed') audioCtx.close();
-    } catch (_) {
-      // Nodes may already be disconnected
-    }
-    audioCtx = null;
-    workletNode = null;
-    sourceNode = null;
-    lowShelf = null;
-    midPeak = null;
-    highShelf = null;
-    initialized = false;
   }
 
   // -------------------------------------------------------------------------

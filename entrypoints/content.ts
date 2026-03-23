@@ -3,6 +3,8 @@ export default defineContentScript({
   runAt: 'document_end',
 
   main() {
+    let audioReady = false;
+
     // 1. Inject page script (runs in main world for Web Audio API access)
     const script = document.createElement('script');
     script.src = chrome.runtime.getURL('youtube-audio-hook.js');
@@ -16,15 +18,26 @@ export default defineContentScript({
           },
         }),
       );
-
-      // 3. Check if we're already on a video page
-      reportCurrentVideo();
+      // NOTE: Don't report video here — wait for kara:audio-connected
     };
     (document.head || document.documentElement).append(script);
 
-    // 4. Listen for YouTube SPA navigation
-    document.addEventListener('yt-navigate-finish', () => {
+    // 3. When audio pipeline is ready, report current video to get saved pitch
+    window.addEventListener('kara:audio-connected', () => {
+      audioReady = true;
+      chrome.runtime.sendMessage({ action: 'AUDIO_CONNECTED' });
       reportCurrentVideo();
+    });
+
+    window.addEventListener('kara:error', ((e: CustomEvent) => {
+      chrome.runtime.sendMessage({ action: 'AUDIO_ERROR', message: e.detail?.message });
+    }) as EventListener);
+
+    // 4. Listen for YouTube SPA navigation — just update pitch, no re-hook needed
+    document.addEventListener('yt-navigate-finish', () => {
+      if (audioReady) {
+        reportCurrentVideo();
+      }
     });
 
     // 5. Forward pitch commands from background → page script
@@ -37,15 +50,6 @@ export default defineContentScript({
         );
       }
     });
-
-    // 6. Relay events from page script → background
-    window.addEventListener('kara:audio-connected', () => {
-      chrome.runtime.sendMessage({ action: 'AUDIO_CONNECTED' });
-    });
-
-    window.addEventListener('kara:error', ((e: CustomEvent) => {
-      chrome.runtime.sendMessage({ action: 'AUDIO_ERROR', message: e.detail?.message });
-    }) as EventListener);
 
     // Helper: extract videoId from URL and report to background
     function reportCurrentVideo() {
